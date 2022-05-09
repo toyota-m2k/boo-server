@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from "path"
 import logManager from '../common/logger'
 import MediaFile from "./MediaFile"
+import { default as cv } from '../common/converter'
 
 const targets = require('../private/targets.json')
 
@@ -14,7 +15,7 @@ export class MediaSources {
 
     constructor(recursive:boolean=true) {
         this.list = []
-        this.addRoot(targets.roots)
+        this.addRoot(targets.roots, "")
     }
 
     private withChecker(fn: () => void) {
@@ -30,13 +31,13 @@ export class MediaSources {
     }
 
 
-    public addRoot(rootPath:string|Array<object>, recursive:boolean = true) {
+    public addRoot(rootPath:string|Array<object>, groupName:string, recursive:boolean = true) {
         this.withChecker(()=>{
             if(typeof rootPath === 'string') {
-                this.listFiles(rootPath, recursive)
+                this.listFiles(rootPath, groupName, recursive)
             } else {
                 rootPath.forEach((v)=> {
-                    this.listFiles(v["path"], v["recursive"])
+                    this.listFiles(v["path"], cv.safe_text(v["name"]), v["recursive"])
                 })
             }
         })
@@ -50,7 +51,7 @@ export class MediaSources {
     //     })
     // }
 
-    private listFiles(parentPath:string, recursive:boolean=true) {
+    private listFiles(parentPath:string, groupName:string, recursive:boolean=true) {
         const names = fs.readdirSync(parentPath)
         names.forEach((name, index)=>{
             try {
@@ -61,13 +62,20 @@ export class MediaSources {
                     const ext = rawExt.toLowerCase()
                     if(ext==".mp4"||ext==".mp3") {
                         if (!this.checker.has(filePath)) {
-                            const title = path.basename(name, rawExt)
+                            let title = path.basename(name, rawExt)
+                            if(groupName.length>0) {
+                                title = groupName + '/' + title
+                            }
                             this.list.push(new MediaFile(filePath, ext, title, stat.size))
                             this.checker.add(filePath)
                         }
                     }
                 } else if(recursive && stat.isDirectory()) {
-                    this.listFiles(filePath, recursive)
+                    let dirName = path.basename(name)
+                    if(groupName.length>0) {
+                       dirName = groupName + '/' + dirName
+                    }
+                    this.listFiles(filePath, dirName, recursive)
                 }
             } catch (e) {
                 logger.stack(e)

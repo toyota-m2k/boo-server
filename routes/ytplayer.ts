@@ -15,10 +15,9 @@ router.get('/list', (req,res,next)=>{
         cmd: "list",
         date: date.getUTCSeconds(),
         list: sources.list.map((v,i)=>{
-            const name = path.basename(v.path)
             return {
                 id: `${i+1}`,
-                name: path.basename(name, path.extname(name)),
+                name: v.title,
                 start: 0,
                 end: 0,
                 volume:0.5
@@ -46,6 +45,7 @@ router.get('/video', (req, res, next)=>{
     const range = req.range(file.length)
     let stream :ReadStream
     if(!range) {
+        logger.debug(`${file.title}`)
         res.writeHead(200, {
             "Content-Length": file.length,
             "Content-Type": file.mimeType(),
@@ -64,6 +64,7 @@ router.get('/video', (req, res, next)=>{
             res.sendStatus(500)
             return
         }
+        logger.debug(`${file.title} :: ${start}-${end}`)
         res.writeHead(206, {
             "Content-Length": end-start-1,
             "Content-Type": file.mimeType(),
