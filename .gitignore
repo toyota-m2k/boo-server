@@ -1,0 +1,7 @@
+.idea
+node_modules
+private/*
+yarn-error.log
+*.js
+*.js.map
+
