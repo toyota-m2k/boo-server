@@ -9,6 +9,19 @@ import {ReadStream} from "fs";
 const router = express.Router()
 const logger = logManager.enable("media")
 
+router.get('/capability', (req, res, next)=>{
+    res.json( {
+        cmd: "capability",
+        serverName: "BooServer",
+        version:1,
+        category:false,
+        rating:false,
+        mark:false,
+        acceptRequest:false,
+        hasView:false,
+    })
+})
+
 router.get('/list', (req,res,next)=>{
     const date = new Date()
     const o = {
@@ -20,7 +33,8 @@ router.get('/list', (req,res,next)=>{
                 name: v.title,
                 start: 0,
                 end: 0,
-                volume:0.5
+                volume:0.5,
+                type: v.booType(),
             }
         })
     }
@@ -87,7 +101,7 @@ router.get('/video', (req, res, next)=>{
 router.get('/category', (req,res,next)=>{
     res.json({
         cmd:"category",
-        categories:{}
+        categories:[]
     })
 })
 
@@ -95,7 +109,7 @@ router.get('/chapter', (req,res,next)=>{
     res.json({
         cmd:"chapter",
         id:`${cv.safe_text(req.query.id)}`,
-        chapters:{}
+        chapters:[]
     })
 })
 

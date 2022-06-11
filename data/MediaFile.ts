@@ -17,4 +17,8 @@ export default class MediaFile {
             default: return "video/mp4"
         }
     }
+
+    public booType():string {
+        return this.ext.startsWith(".") ? this.ext.substring(1) : this.ext
+    }
 }
