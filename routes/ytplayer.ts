@@ -9,6 +9,8 @@ import {ReadStream} from "fs";
 const router = express.Router()
 const logger = logManager.enable("media")
 
+sources.prepare();
+
 router.get('/capability', (req, res, next)=>{
     res.json( {
         cmd: "capability",
@@ -35,6 +37,8 @@ router.get('/list', (req,res,next)=>{
                 end: 0,
                 volume:0.5,
                 type: v.booType(),
+                size:v.length,
+                duration:v.duration.toFixed(),
             }
         })
     }

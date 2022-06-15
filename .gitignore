@@ -1,5 +1,5 @@
 node_modules
-private/*
+private/*.json
 yarn-error.log
 *.js
 *.js.map

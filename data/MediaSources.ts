@@ -10,37 +10,46 @@ const logger = logManager.enable("media")
 
 export class MediaSources {
     public list:Array<MediaFile>
-    private checker:Set<string>
+    private checker:Set<string>|null
+    private prepared:Boolean = false
 
 
-    constructor(recursive:boolean=true) {
+    constructor() {
         this.list = []
-        this.addRoot(targets.roots, "")
+        this.checker = null
+
+        // this.addRoot(targets.roots, "")
     }
 
-    private withChecker(fn: () => void) {
-        let checkerPrepared = false
-        if(!this.checker) {
-            this.checker = new Set<string>(this.list.map((v)=>v.path))
-            checkerPrepared = true
-        }
-        fn()
-        if(checkerPrepared) {
-            delete this.checker
-        }
+    // private withChecker(fn: () => void) {
+    //     let checkerPrepared = false
+    //     if(!this.checker) {
+    //         this.checker = new Set<string>(this.list.map((v)=>v.path))
+    //         checkerPrepared = true
+    //     }
+    //     fn()
+    //     if(checkerPrepared) {
+    //         delete this.checker
+    //     }
+    // }
+
+    public prepare(recursive:boolean=true) {
+        if(this.prepared) return
+        this.prepared = true
+        this.addRoot(targets.roots, "", recursive).then();
     }
 
 
-    public addRoot(rootPath:string|Array<object>, groupName:string, recursive:boolean = true) {
-        this.withChecker(()=>{
-            if(typeof rootPath === 'string') {
-                this.listFiles(rootPath, groupName, recursive)
-            } else {
-                rootPath.forEach((v)=> {
-                    this.listFiles(v["path"], cv.safe_text(v["name"]), v["recursive"])
-                })
+    public async addRoot(rootPath:string|Array<object>, groupName:string, recursive:boolean = true) {
+        this.checker = new Set<string>(this.list.map((v)=>v.path))
+        if(typeof rootPath === 'string') {
+            await this.listFiles(rootPath, groupName, recursive)
+        } else {
+            for(const v of rootPath) {
+                await this.listFiles(v["path"], cv.safe_text(v["name"]), v["recursive"])
             }
-        })
+        }
+        delete this.checker
     }
 
     // public addRoot(rootPaths:Array<string>, recursive:boolean = true) {
@@ -51,9 +60,9 @@ export class MediaSources {
     //     })
     // }
 
-    private listFiles(parentPath:string, groupName:string, recursive:boolean=true) {
+    private async listFiles(parentPath:string, groupName:string, recursive:boolean=true) {
         const names = fs.readdirSync(parentPath)
-        names.forEach((name, index)=>{
+        for(const name of names) {
             try {
                 const filePath = path.join(parentPath, name)
                 const stat = fs.statSync(filePath)
@@ -66,7 +75,8 @@ export class MediaSources {
                             if(groupName.length>0) {
                                 title = groupName + '/' + title
                             }
-                            this.list.push(new MediaFile(filePath, ext, title, stat.size))
+                            // this.list.push((new MediaFile(filePath, ext, title, stat.size)).getDuration())
+                            this.list.push(await MediaFile.create(filePath, ext, title, stat.size))
                             this.checker.add(filePath)
                         }
                     }
@@ -75,12 +85,12 @@ export class MediaSources {
                     if(groupName.length>0) {
                        dirName = groupName + '/' + dirName
                     }
-                    this.listFiles(filePath, dirName, recursive)
+                    await this.listFiles(filePath, dirName, recursive)
                 }
             } catch (e) {
                 logger.stack(e)
             }
-        })
+        }
     }
 
     public dump() {

@@ -1,0 +1,4 @@
+{
+  "ffprobe": "c:/bin/ffmpeg/ffprobe",
+  "port": 8000
+}
