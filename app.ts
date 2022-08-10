@@ -9,6 +9,7 @@ var indexRouter = require('./routes')
 //var usersRouter = require('./routes/users')
 const mediaRouter = require('./routes/media')
 const ytRouter = require('./routes/ytplayer')
+const config = require('./private/config.json')
 
 var app = express();
 
@@ -23,10 +24,11 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
 //app.use('/users', usersRouter);
 app.use('/media', mediaRouter)
 app.use('/ytplayer', ytRouter)
+
+app.use('/', express.static(config.player))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

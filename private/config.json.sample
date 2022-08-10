@@ -1,4 +1,5 @@
 {
   "ffprobe": "c:/bin/ffmpeg/ffprobe",
-  "port": 8000
+  "port": 8000,
+  "player": "C:/dev/service/boo-player/svelte/boo-player/dist"
 }
