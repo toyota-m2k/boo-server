@@ -4,14 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 var logger = require('morgan');
+var cors = require("cors")
 
-var indexRouter = require('./routes')
+// var indexRouter = require('./routes')
 //var usersRouter = require('./routes/users')
 const mediaRouter = require('./routes/media')
 const ytRouter = require('./routes/ytplayer')
 const config = require('./private/config.json')
 
-var app = express();
+const app = express();
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,11 +26,13 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use('/users', usersRouter);
 app.use('/media', mediaRouter)
 app.use('/ytplayer', ytRouter)
 
-app.use('/', express.static(config.player))
+const serverRoot = config.player
+if(serverRoot && serverRoot.length>0) {
+  app.use('/', express.static(serverRoot))
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,14 +1,14 @@
 {
   "roots":[
     {
-      "path": "C:/Users/hoge/Videos",
+      "path": "C:/Users/Hoge/Videos",
       "name": "My Videos"
-      "recursive": true
+      "recursive": false
     },
     {
       "path": "d:/data/music",
       "name": "Music collection",
-      "recursive": false
+      "recursive": true
     },
   ]
 }

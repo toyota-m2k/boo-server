@@ -4,10 +4,16 @@ Standalone server for [BooDroid](https://github.com/toyota-m2k/boodroid)
 ## Setup
 
 ### private/config.json
-
+```
+{
+  "ffprobe": "c:/bin/ffmpeg/ffprobe.exe",
+  "port": 8000,
+  "player": ""
+}
+```
 - ffprobe (required)
  
-  Path to ffprove(.exe) of ffmpeg.
+  Path to ffprove(.exe) in ffmpeg.
 
 - port (optional - default: 3000)
 
@@ -18,14 +24,28 @@ Standalone server for [BooDroid](https://github.com/toyota-m2k/boodroid)
   Server root for index.html.
  
 ### private/target.json
-
 Specify media sources.
+```
+{
+  "roots":[
+    {
+      "path": "C:/Users/Hoge/Videos",
+      "name": "My Videos"
+      "recursive": false
+    },
+    {
+      "path": "d:/data/music",
+      "name": "Music collection",
+      "recursive": true
+    },
+  ]
+}
+```
 
 - roots
   
   Array of media sources.
 
-  Media source:
   - path
   
     Path to the directory that stores media files.
