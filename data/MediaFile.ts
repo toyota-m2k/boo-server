@@ -1,5 +1,5 @@
-const { getVideoDurationInSeconds } = require('get-video-duration')
-const config = require('../private/config.json')
+import {getVideoDurationInSeconds} from "get-video-duration"
+import config from "../private/config.json"
 
 export default class MediaFile {
     public path:string
@@ -24,6 +24,14 @@ export default class MediaFile {
 
     public booType():string {
         return this.ext.startsWith(".") ? this.ext.substring(1) : this.ext
+    }
+
+    get mediaType():string {
+        switch(this.ext) {
+            case ".mp3": return "a"
+            case ".mp4": return "v"
+            default: return "v"
+        }
     }
 
     public async getDuration():Promise<MediaFile> {

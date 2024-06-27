@@ -26,13 +26,13 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/media', mediaRouter)
-app.use('/ytplayer', ytRouter)
+app.use('/', ytRouter)
+app.use('/list', mediaRouter)
 
-const serverRoot = config.player
-if(serverRoot && serverRoot.length>0) {
-  app.use('/', express.static(serverRoot))
-}
+// const serverRoot = config.player
+// if(serverRoot && serverRoot.length>0) {
+//   app.use('/', express.static(serverRoot))
+// }
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

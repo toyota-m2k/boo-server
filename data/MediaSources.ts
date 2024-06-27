@@ -3,8 +3,7 @@ import * as path from "path"
 import logManager from '../common/logger'
 import MediaFile from "./MediaFile"
 import { default as cv } from '../common/converter'
-
-const targets = require('../private/targets.json')
+import targets from "../private/targets.json";
 
 const logger = logManager.enable("media")
 

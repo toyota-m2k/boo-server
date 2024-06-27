@@ -15,12 +15,19 @@ router.get('/capability', (req, res, next)=>{
     res.json( {
         cmd: "capability",
         serverName: "BooServer",
-        version:1,
+        version:2,
+        root: '/',
         category:false,
         rating:false,
         mark:false,
+        chapter:false,
+        reputation: 0,
+        dif: false,
+        sync: false,
         acceptRequest:false,
         hasView:false,
+        authentication:false,
+        types: "va",
     })
 })
 
@@ -36,7 +43,8 @@ router.get('/list', (req,res,next)=>{
                 start: 0,
                 end: 0,
                 volume:0.5,
-                type: v.booType(),
+                type: v.booType(),  // deprecated
+                media: v.mediaType,
                 size:v.length,
                 duration:v.duration.toFixed(),
             }
@@ -45,7 +53,7 @@ router.get('/list', (req,res,next)=>{
     res.json(o)
 })
 
-router.get('/video', (req, res, next)=>{
+function getItem(req,res) {
     const id = cv.int(req.query.id)-1
     if(id<0) {
         logger.warn("no id")
@@ -84,7 +92,7 @@ router.get('/video', (req, res, next)=>{
         }
         logger.debug(`${file.title} :: ${start}-${end}`)
         res.writeHead(206, {
-            "Content-Length": end-start-1,
+            "Content-Length": end-start+1,
             "Content-Type": file.mimeType(),
             "Accept-Ranges": "bytes",
             "Content-Range": `bytes ${start}-${end}/${file.length}`
@@ -100,6 +108,16 @@ router.get('/video', (req, res, next)=>{
         res.sendStatus(500)
     })
     stream.pipe(res)
+}
+
+router.get('/video', (req, res, next)=>{
+    getItem(req,res)
+})
+router.get('/audio', (req, res, next)=>{
+    getItem(req,res)
+})
+router.get('/item', (req, res, next)=>{
+    getItem(req,res)
 })
 
 router.get('/category', (req,res,next)=>{
