@@ -42,19 +42,28 @@ Specify media sources.
 }
 ```
 
-- roots
+- root
   
   Array of media sources.
 
   - path
   
     Path to the directory that stores media files.
+
   - name
     
     Any label.
+    
   - recursive
   
     true: to find all media files from the directory and its sub-directories.
+
+## Build
+
+```
+yarn install
+tsc
+```
  
 ## Startup
 

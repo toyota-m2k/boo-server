@@ -5,3 +5,4 @@ yarn-error.log
 *.js.map
 
 .idea/aws.xml
+.yarn

@@ -149,3 +149,4 @@ router.route('/current')
     })
 
 module.exports = router
+export default router

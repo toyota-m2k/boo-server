@@ -1,16 +1,17 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var lessMiddleware = require('less-middleware');
-var logger = require('morgan');
-var cors = require("cors")
+import createError from "http-errors";
+import express from "express";
+import path from "path";
+import cookieParser from "cookie-parser";
+import lessMiddleware from "less-middleware";
+import logger from "morgan";
+import cors from "cors";
+import logManager from "./common/logger"
 
 // var indexRouter = require('./routes')
 //var usersRouter = require('./routes/users')
-const mediaRouter = require('./routes/media')
-const ytRouter = require('./routes/ytplayer')
-const config = require('./private/config.json')
+import mediaRouter from "./routes/media"
+import ytRouter from "./routes/ytplayer";
+// import config from "./private/config.json"
 
 const app = express();
 app.use(cors())
@@ -51,3 +52,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+logManager.enable("boo-server").info("server started")
