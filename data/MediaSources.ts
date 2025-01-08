@@ -68,14 +68,14 @@ export class MediaSources {
                 if(stat.isFile()) {
                     const rawExt = path.extname(name)
                     const ext = rawExt.toLowerCase()
-                    if(ext==".mp4"||ext==".mp3") {
+                    if(ext==".mp4"||ext==".mp3"||ext==".jpg"||ext==".jpeg"||ext==".png") {
                         if (!this.checker.has(filePath)) {
                             let title = path.basename(name, rawExt)
                             if(groupName.length>0) {
                                 title = groupName + '/' + title
                             }
                             // this.list.push((new MediaFile(filePath, ext, title, stat.size)).getDuration())
-                            this.list.push(await MediaFile.create(filePath, ext, title, stat.size))
+                            this.list.push(await MediaFile.create(filePath, ext, title, stat.size, stat.ctimeMs))
                             this.checker.add(filePath)
                         }
                     }

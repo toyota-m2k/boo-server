@@ -7,11 +7,13 @@ export default class MediaFile {
     public title:string
     public length:number
     public duration:number
-    constructor(path:string, ext:string, title:string, length:number) {
+    public date:number
+    constructor(path:string, ext:string, title:string, length:number,date:number) {
         this.path = path
         this.ext = ext
         this.length = length
         this.title = title
+        this.date = date
     }
 
     public mimeType():string {
@@ -28,19 +30,27 @@ export default class MediaFile {
 
     get mediaType():string {
         switch(this.ext) {
-            case ".mp3": return "a"
-            case ".mp4": return "v"
+            case ".mp3":
+                return "a"
+            case ".mp4":
+                return "v"
+            case ".jpg":
+            case ".jpeg":
+            case ".png":
+                return "p"
             default: return "v"
         }
     }
 
     public async getDuration():Promise<MediaFile> {
-        this.duration = await getVideoDurationInSeconds(this.path, config.ffprobe)
+        if(this.ext===".mp3"||this.ext===".mp4") {
+            this.duration = await getVideoDurationInSeconds(this.path, config.ffprobe)
+        }
         return this;
     }
 
-    public static async create(path:string, ext:string, title:string, length:number):Promise<MediaFile> {
-        const e = new MediaFile(path, ext, title, length)
+    public static async create(path:string, ext:string, title:string, length:number,date:number):Promise<MediaFile> {
+        const e = new MediaFile(path, ext, title, length, date)
         await e.getDuration()
         return e;
     }

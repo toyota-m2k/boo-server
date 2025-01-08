@@ -22,35 +22,75 @@ router.get('/capability', (req, res, next)=>{
         mark:false,
         chapter:false,
         reputation: 0,
-        dif: false,
+        diff: true,
         sync: false,
         acceptRequest:false,
         hasView:false,
         authentication:false,
-        types: "va",
+        types: "vap",   // video, audio, photo
+    })
+})
+
+const date = new Date()
+
+router.get('/check', (req,res,next)=>{
+    const ds = req.query.date as string
+    const dn = parseInt(ds??'0')
+    const update = (date.getTime()>dn) ? "1" : "0"
+    res.json({
+        cmd: "check",
+        update,
+        status: "ok"
     })
 })
 
 router.get('/list', (req,res,next)=>{
-    const date = new Date()
-    const o = {
-        cmd: "list",
-        date: date.getUTCSeconds(),
-        list: sources.list.map((v,i)=>{
-            return {
-                id: `${i+1}`,
-                name: v.title,
-                start: 0,
-                end: 0,
-                volume:0.5,
-                type: v.booType(),  // deprecated
-                media: v.mediaType,
-                size:v.length,
-                duration:v.duration.toFixed(),
-            }
-        })
+    const type = req.query.type as string
+    const types = req.query.f as string
+    let video = true
+    let audio = true
+    let photo = true
+    if(types) {
+        video = types.includes("v")
+        audio = types.includes("a")
+        photo = types.includes("p")
+    } else if (type) {
+        video = type === "video" || type === "all"
+        audio = type === "audio" || type === "all"
+        photo = type === "photo" || type === "all"
     }
-    res.json(o)
+
+    function filter(file:MediaFile):boolean {
+        if(video && file.mediaType==='v') return true
+        if(audio && file.mediaType==='a') return true
+        if(photo && file.mediaType==='p') return true
+        return false
+    }
+
+    try {
+        const o = {
+            cmd: "list",
+            date: date.getTime(),
+            list: sources.list.map((v, i) => {
+                return {
+                    id: `${i + 1}`,
+                    name: v.title,
+                    start: 0,
+                    end: 0,
+                    volume: 0.5,
+                    type: v.booType(),  // deprecated
+                    media: v.mediaType,
+                    size: v.length,
+                    duration: v.duration?.toFixed() ?? 0,
+                }
+            })
+        }
+        res.json(o)
+    } catch (e) {
+        logger.stack(e, "list error")
+        res.sendStatus(500)
+    }
+
 })
 
 function getItem(req,res) {
@@ -114,6 +154,9 @@ router.get('/video', (req, res, next)=>{
     getItem(req,res)
 })
 router.get('/audio', (req, res, next)=>{
+    getItem(req,res)
+})
+router.get('/photo', (req, res, next)=>{
     getItem(req,res)
 })
 router.get('/item', (req, res, next)=>{
