@@ -20,6 +20,9 @@ export default class MediaFile {
         switch(this.ext) {
             case ".mp3": return "audio/mpeg"
             case ".mp4": return "video/mp4"
+            case ".jpg":
+            case ".jpeg": return "image/jpeg"
+            case ".png": return "image/png"
             default: return "video/mp4"
         }
     }
