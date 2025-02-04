@@ -191,5 +191,12 @@ router.route('/current')
         })
     })
 
+ router.route('/nop')
+    .get((req,res,next)=>{
+        res.json({
+            cmd:"nop",
+        })
+    })   
+
 module.exports = router
 export default router
