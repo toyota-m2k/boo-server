@@ -5,15 +5,17 @@ export default class MediaFile {
     public path:string
     public ext:string
     public title:string
+    public category:string
     public length:number
     public duration:number
     public date:number
-    constructor(path:string, ext:string, title:string, length:number,date:number) {
+    constructor(path:string, ext:string, title:string, category:string, length:number,date:number) {
         this.path = path
         this.ext = ext
         this.length = length
         this.title = title
         this.date = date
+        this.category = category
     }
 
     public mimeType():string {
@@ -52,8 +54,8 @@ export default class MediaFile {
         return this;
     }
 
-    public static async create(path:string, ext:string, title:string, length:number,date:number):Promise<MediaFile> {
-        const e = new MediaFile(path, ext, title, length, date)
+    public static async create(path:string, ext:string, title:string, category:string, length:number,date:number):Promise<MediaFile> {
+        const e = new MediaFile(path, ext, title, category, length, date)
         await e.getDuration()
         return e;
     }
