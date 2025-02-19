@@ -17,7 +17,7 @@ router.get('/capability', (req, res, next)=>{
         serverName: "BooServer",
         version:2,
         root: '/',
-        category:false,
+        category:true,
         rating:false,
         mark:false,
         chapter:false,
@@ -45,6 +45,7 @@ router.get('/check', (req,res,next)=>{
 })
 
 router.get('/list', (req,res,next)=>{
+    const category = req.query.c as string|undefined
     const type = req.query.type as string
     const types = req.query.f as string
     let video = true
@@ -61,6 +62,9 @@ router.get('/list', (req,res,next)=>{
     }
 
     function filter(file:MediaFile):boolean {
+        if(category&&file.category !== category) {
+            return false
+        }
         if(video && file.mediaType==='v') return true
         if(audio && file.mediaType==='a') return true
         if(photo && file.mediaType==='p') return true
@@ -71,7 +75,7 @@ router.get('/list', (req,res,next)=>{
         const o = {
             cmd: "list",
             date: date.getTime(),
-            list: sources.list.map((v, i) => {
+            list: sources.list.filter(it=>filter(it)).map((v, i) => {
                 return {
                     id: `${i + 1}`,
                     name: v.title,
@@ -163,13 +167,6 @@ router.get('/item', (req, res, next)=>{
     getItem(req,res)
 })
 
-router.get('/category', (req,res,next)=>{
-    res.json({
-        cmd:"category",
-        categories:[]
-    })
-})
-
 router.get('/chapter', (req,res,next)=>{
     res.json({
         cmd:"chapter",
@@ -191,7 +188,20 @@ router.route('/current')
         })
     })
 
- router.route('/nop')
+router.route('/categories')
+    .get((req,res,next)=>{
+        res.json({
+            cmd:"categories",
+            unchecked:"root",
+            categories:sources.categories.map((v)=>{
+                return {
+                    label:v
+                }
+            })
+        })
+    })
+
+router.route('/nop')
     .get((req,res,next)=>{
         res.json({
             cmd:"nop",

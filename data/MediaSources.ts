@@ -9,13 +9,17 @@ const logger = logManager.enable("media")
 
 export class MediaSources {
     public list:Array<MediaFile>
+    private categoriesSet:Set<string>
     private checker:Set<string>|null
     private prepared:Boolean = false
 
-
+    public get categories():Array<string> {
+        return Array.from(this.categoriesSet)
+    }
     constructor() {
         this.list = []
         this.checker = null
+        this.categoriesSet = new Set<string>()
 
         // this.addRoot(targets.roots, "")
     }
@@ -59,7 +63,7 @@ export class MediaSources {
     //     })
     // }
 
-    private async listFiles(parentPath:string, groupName:string, recursive:boolean=true) {
+    private async listFiles(parentPath:string, dirName:string, recursive:boolean=true) {
         const names = fs.readdirSync(parentPath)
         for(const name of names) {
             try {
@@ -71,20 +75,18 @@ export class MediaSources {
                     if(ext==".mp4"||ext==".mp3"||ext==".jpg"||ext==".jpeg"||ext==".png") {
                         if (!this.checker.has(filePath)) {
                             let title = path.basename(name, rawExt)
-                            if(groupName.length>0) {
-                                title = groupName + '/' + title
+                            if(dirName.length>0) {
+                                title = dirName + '/' + title
                             }
                             // this.list.push((new MediaFile(filePath, ext, title, stat.size)).getDuration())
-                            this.list.push(await MediaFile.create(filePath, ext, title, stat.size, stat.ctimeMs))
+                            this.list.push(await MediaFile.create(filePath, ext, title, dirName, stat.size, stat.ctimeMs))
+                            this.categoriesSet.add(dirName)
                             this.checker.add(filePath)
                         }
                     }
                 } else if(recursive && stat.isDirectory()) {
-                    let dirName = path.basename(name)
-                    if(groupName.length>0) {
-                       dirName = groupName + '/' + dirName
-                    }
-                    await this.listFiles(filePath, dirName, recursive)
+                    let itemName = path.basename(name)
+                    await this.listFiles(filePath, itemName, recursive)
                 }
             } catch (e) {
                 logger.stack(e)
