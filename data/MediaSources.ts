@@ -79,9 +79,10 @@ export class MediaSources {
                                 title = dirName + '/' + title
                             }
                             // this.list.push((new MediaFile(filePath, ext, title, stat.size)).getDuration())
-                            this.list.push(await MediaFile.create(filePath, ext, title, dirName, stat.size, stat.ctimeMs))
+                            this.list.push(await MediaFile.create(filePath, ext, title, dirName, stat.size, stat.birthtimeMs))
                             this.categoriesSet.add(dirName)
                             this.checker.add(filePath)
+                            logger.debug(`add ${title} ${stat.atime} ${stat.mtime} ${stat.ctime} ${stat.birthtime} ${stat.size} ${stat.mtimeMs}`)
                         }
                     }
                 } else if(recursive && stat.isDirectory()) {

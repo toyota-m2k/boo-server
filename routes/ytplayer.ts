@@ -31,6 +31,12 @@ router.get('/capability', (req, res, next)=>{
     })
 })
 
+router.get('/nop', (req,res,next)=>{
+        res.json({
+            cmd:"nop",
+        })
+    })   
+
 const date = new Date()
 
 router.get('/check', (req,res,next)=>{
@@ -200,13 +206,6 @@ router.route('/categories')
             })
         })
     })
-
-router.route('/nop')
-    .get((req,res,next)=>{
-        res.json({
-            cmd:"nop",
-        })
-    })   
 
 module.exports = router
 export default router
